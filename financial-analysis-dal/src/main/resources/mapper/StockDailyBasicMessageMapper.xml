@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.analysis.dal.mapper.StockDailyBasicMessageMapper">
+
+    <sql id="basicColumn">
+        stock_code,stock_name,present_price,rise_or_fall,rise_or_fall_rate,highest_price,lowest_price,opening_price,harden_price,
+        down_price,average_price,yesterday_closing_price,turnover_hand,turnover_amount,sellvol,buyvol,quantity_relative_ratio,trading_hour,
+        plate,super_order_water_amount,big_order_water_amount,medium_order_water_amount,small_order_water_amount,main_static_ratio,
+        super_order_static_ratio,big_order_static_ratio,medium_order_static_ratio,small_order_static_ratio,turnover_rate,
+        entrust_ratio,entrust_balance
+    </sql>
+    <sql id="basicColumnByJava">
+        #{stockCode},#{stockName,jdbcType=VARCHAR},#{presentPrice},#{riseOrFall},#{riseOrFallRate},#{highestPrice},#{lowestPrice},#{openingPrice},
+        #{hardenPrice},#{downPrice},#{averagePrice},#{yesterdayClosingPrice},#{turnoverHand},#{turnoverAmount},#{sellvol},
+        #{buyvol},#{quantityRelativeRatio},#{tradingHour},#{plate, jdbcType=VARCHAR},#{superOrderWaterAmount},#{bigOrderWaterAmount},#{mediumOrderWaterAmount},
+        #{smallOrderWaterAmount},#{mainStaticRatio},#{superOrderStaticRatio},#{bigOrderStaticRatio},#{mediumOrderStaticRatio},
+        #{smallOrderStaticRatio},#{turnoverRate},#{entrustRatio},#{entrustBalance}
+    </sql>
+
+    <insert id="insert" parameterType="java.util.Map">
+        insert into stock_daily_basic_message (
+        <include refid="basicColumn"/>
+        )values(
+        <include refid="basicColumnByJava"/>
+        )
+    </insert>
+
+    <select id="select" parameterType="java.util.Map" resultType="java.util.Map">
+        select *
+        from stock_daily_basic_message
+        <where>
+            <if test="stockCode != null and stockCode != ''">
+                stock_code = #{stockCode}
+            </if>
+            <if test="stockName != null and stockName != ''">
+                and stock_code = #{stockCode}
+            </if>
+        </where>
+        order by create_time desc
+        <if test="length != null">
+            <if test="start != null">
+                limit ${start}, ${length}
+            </if>
+            <if test="start == null">
+                limit ${length}
+            </if>
+        </if>
+    </select>
+
+    <select id="count" parameterType="java.util.Map" resultType="java.lang.Integer">
+        select count(*) from stock_daily_basic_message
+        <where>
+            <if test="stockCode != null and stockCode != ''">
+                stock_code = #{stockCode}
+            </if>
+            <if test="stockName != null and stockName != ''">
+                and stock_name = #{stockName}
+            </if>
+        </where>
+    </select>
+
+
+</mapper>

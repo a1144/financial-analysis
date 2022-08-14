@@ -1,0 +1,71 @@
+server:
+  port: 8082
+c3p0:
+  jdbcUrl: jdbc:mysql://47.95.210.26:3306/shuangyu?serverTimezone=UTC&useSSL=false
+  useUnicode: true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false
+  user: root
+  password: root
+  driverClass: com.mysql.cj.jdbc.Driver
+  minPoolSize: 2
+  maxPoolSize: 10
+  maxIdleTime: 1800000
+  acquireIncrement: 3
+  maxStatements: 1000
+  initialPoolSize: 3
+  idleConnectionTestPeriod: 60
+  acquireRetryAttempts: 30
+  acquireRetryDelay: 1000
+  breakAfterAcquireFailure: false
+  testConnectionOnCheckout: false
+
+#配置数据源
+spring:
+  datasource:
+    url: jdbc:mysql://47.95.210.26:3306/shuangyu?serverTimezone=UTC&useSSL=false
+    useUnicode: true&characterEncoding=UTF-8&autoReconnect=true&failOverReadOnly=false
+    user: root
+    password: root
+    driverClass: com.mysql.cj.jdbc.Driver
+    minPoolSize: 2
+    maxPoolSize: 10
+    maxIdleTime: 1800000
+    acquireIncrement: 3
+    maxStatements: 1000
+    initialPoolSize: 3
+    idleConnectionTestPeriod: 60
+    acquireRetryAttempts: 30
+    acquireRetryDelay: 1000
+    breakAfterAcquireFailure: false
+    testConnectionOnCheckout: false
+    driver-class-name: com.mysql.jdbc.Driver
+  #rabbitmq
+  application:
+    name: springboot-rabbitmq
+    rabbitmq:
+      host: 47.95.210.26
+      port: 5672
+      username: guest
+      password: guest
+      virtual-host: /
+  #邮箱配置
+  mail:
+    host: smtp.qq.com
+    username: 1144950389@qq.com
+    password: heuuypjhdbczfjbf
+    default-encoding: utf-8
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+
+#指定mybatis映射文件的地址
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+
+#打印sql
+#logging:
+#  level:
+#    com.analysis.dal.mapper : debug

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/css/jquery-ui.css"/>
+    <link rel="stylesheet" href="/css/bootstrap.min.css"/>
+    <script type="text/javascript" src="/js/jquery-3.3.1.min.js"></script>
+</head>
+<body>
+<div style="height: 20px;"></div>
+<!--<form id="uploadForm" enctype="multipart/form-data" method="post" action="/send">-->
+<!--<form id="uploadForm" enctype="multipart/form-data">-->
+<div>
+    <img src="" id="image_1">
+    <img src="" id="image_2">
+</div>
+
+
+<script type="text/javascript">
+    $(function () {
+        $.ajax({
+            url : "/display",
+            type : "post",
+            success:function () {
+                
+            }
+        });
+    });
+
+    function send() {
+        console.log($("#email").val());
+        console.log($("#content").val());
+
+        var formData = new FormData();
+        var email = $.trim(($("#email")).val());
+        var title = $.trim($("#title").val());
+        var content = $.trim($("#content").val());
+        var multipartFile = $("#file")[0].files[0];
+
+        formData.append("email", email);
+        formData.append("title", title);
+        formData.append("content", content);
+        formData.append("multipartFile", multipartFile);
+
+        $.ajax({
+            url: "/send",
+            dataType: "json",
+            data: formData,
+            processData: false,
+            contentType: false,
+            type: "post",
+            success: function (data) {
+                if (data.code === 200) {
+                    alert("发送成功");
+                } else {
+                    alert("发送失败" + data.error);
+                }
+            }
+        });
+
+
+    }
+</script>
+</body>
+</html>
+

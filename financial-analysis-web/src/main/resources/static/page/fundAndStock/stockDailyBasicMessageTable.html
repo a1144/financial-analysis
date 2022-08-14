@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>stock</title>
+    <link rel="icon" href="../../favicon.ico">
+    <link rel="stylesheet" href="../../layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="../../css/public.css" media="all"/>
+    <link rel="stylesheet" href="../../css/jquery-ui.css" media="all"/>
+    <link rel="stylesheet" href="../../css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="../../css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" href="../../css/bootstrap-table.min.css">
+    <link rel="stylesheet" href="../../css/bootstrap-select.min.css"/>
+
+    <script type="text/javascript" src="../../layui/layui.js"></script>
+    <script type="text/javascript" src="../../js/cache.js"></script>
+    <script type="text/javascript" src="../../js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="../../js/jquery-ui.js"></script>
+    <script type="text/javascript" src="../../js/jquery.cookie.js"></script>
+    <script type="text/javascript" src="../../js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../js/bootstrap-table.min.js"></script>
+    <script type="text/javascript" src="../../js/bootstrap-table-zh-CN.js"></script>
+</head>
+<body>
+
+
+<div class="container-fluid">
+
+    <div class="row-fluid">
+        <div class="form-group">
+            <div class="alert alert-info task-title">
+                <strong style="font-size: large;">股票信息</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="row-fluid search-box">
+        <div class="form-group" style="margin: 0; width: 100%;">
+            <div class="col-md-3">
+                <div class="input-group">
+                    <span class="input-group-addon">快照ID</span>
+                    <input type="text" class="form-control" id="snapshot_id" placeholder="输入快照ID" autocomplete="off">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="input-group">
+                    <span class="input-group-addon">快照描述</span>
+                    <input type="text" class="form-control" id="snapshot_description" placeholder="输入快照描述"
+                           autocomplete="off">
+                </div>
+            </div>
+            <button type="button" class="btn btn-default" id="snapshot_search_btn">查询</button>
+        </div>
+    </div>
+
+    <div class="row-fluid div-table-father">
+        <div>
+            <table id="stock_daily_basic_message_table"></table>
+        </div>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    $(function () {
+        initStockDailyBasicMessageTable();
+    });
+
+    function initStockDailyBasicMessageTable() {
+        $("#stock_daily_basic_message_table").bootstrapTable('destroy').bootstrapTable({
+            url: "/stockDailyBasicMessage/selectByCodeAndName",
+            method: "post",
+            dataType: "json",
+            contentType: 'application/json;charset=utr-8',
+            cache: false,
+            minimumCountColumns: 2,
+            paginationFirstText: "First",
+            paginationLastText: "Last",
+            pagination: true,
+            sortable: false,
+            pageSize: 10,
+            pageNumber: 1,
+            pageList: [5, 10, 20, 30],
+            paginationPreText: "Prev",
+            paginationNextText: "Next",
+            locate: 'zh-CN',
+            undefinedText: '-',
+            showColumns: true,
+            showRefresh: true,
+            smartDisplay: true,
+            paginationLoop: false,
+            sidePagination: 'server',
+            queryParamsType: "limit",
+            queryParams: function (params) {
+                var temp = {
+                    start: params.offset,
+                    length: params.limit,
+                    stockCode: $.trim($("#stockCode").val()),
+                    stockName: $.trim($("#stockName").val())
+                };
+                return JSON.stringify(temp);
+            },
+            columns: [
+                {
+                    title: '股票代码',
+                    field: 'stock_code',
+                    align: 'center'
+                },
+                {
+                    title: '股票名称',
+                    field: 'stock_name',
+                    align: 'center'
+                }, {
+                    title: '当前价格',
+                    field: 'present_price',
+                    align: 'center'
+                }, {
+                    title: '涨跌',
+                    field: 'rise_or_fall',
+                    align: 'center',
+                    formatter: riseOrFallColor
+                }, {
+                    title: '涨幅',
+                    field: 'rise_or_fall_rate',
+                    align: 'center',
+                    formatter: riseOrFallColor
+                }, {
+                    title: '最高价格',
+                    field: 'highest_price',
+                    align: 'center'
+                }, {
+                    title: '最低价格',
+                    field: 'lowest_price',
+                    align: 'center'
+                }, {
+                    title: '今开价格',
+                    field: 'opening_price',
+                    align: 'center'
+                }, {
+                    title: '涨停价格',
+                    field: 'harden_price',
+                    align: 'center',
+                    visible: false
+                }, {
+                    title: '跌停价格',
+                    field: 'down_price',
+                    align: 'center',
+                    visible: false
+                }, {
+                    title: '昨收价格',
+                    field: 'yesterday_closing_price',
+                    align: 'center'
+                }, {
+                    title: '成交量/手',
+                    field: 'turnover_hand',
+                    align: 'center',
+                    visible: false
+                }, {
+                    title: '成交额',
+                    field: 'turnover_amount',
+                    align: 'center',
+                    formatter: numberFormatter
+                }, {
+                    title: '外盘',
+                    field: 'sellvol',
+                    align: 'center',
+                    formatter: numberFormatter
+                }, {
+                    title: '内盘',
+                    field: 'buyvol',
+                    align: 'center',
+                    formatter: numberFormatter
+                }, {
+                    title: '量比',
+                    field: 'quantity_relative_ratio',
+                    align: 'center'
+                }, {
+                    title: '均价',
+                    field: 'average_price',
+                    align: 'center'
+                }, {
+                    title: '交易时间',
+                    field: 'trading_hour',
+                    align: 'center',
+                    visible: false
+                }, {
+                    title: '所属板块',
+                    field: 'plate',
+                    align: 'center',
+                    formatter: plateFormatter,
+                    visible: false
+                }, {
+                    title: '超大单流水',
+                    field: 'super_order_water_amount',
+                    align: 'center',
+                    visible: false,
+                    formatter: riseOrFallColor
+                }, {
+                    title: '大单流水',
+                    field: 'big_order_water_amount',
+                    align: 'center',
+                    visible: false,
+                    formatter: riseOrFallColor
+                }, {
+                    title: '中单流水',
+                    field: 'medium_order_water_amount',
+                    align: 'center',
+                    visible: false,
+                    formatter: riseOrFallColor
+                }, {
+                    title: '小单流水',
+                    field: 'small_order_water_amount',
+                    align: 'center',
+                    visible: false,
+                    formatter: riseOrFallColor
+                }, {
+                    title: '主力净比',
+                    field: 'main_static_ratio',
+                    align: 'center',
+                    formatter: riseOrFallColor
+                }, {
+                    title: '超大单净比',
+                    field: 'super_order_static_ratio',
+                    align: 'center',
+                    formatter: riseOrFallColor
+                }, {
+                    title: '大单净比',
+                    field: 'big_order_static_ratio',
+                    align: 'center',
+                    formatter: riseOrFallColor
+                }, {
+                    title: '中单净比',
+                    field: 'medium_order_static_ratio',
+                    align: 'center',
+                    formatter: riseOrFallColor
+                }, {
+                    title: '小单净比',
+                    field: 'small_order_static_ratio',
+                    align: 'center',
+                    formatter: riseOrFallColor
+                }, {
+                    title: '换手率',
+                    field: 'turnover_rate',
+                    align: 'center',
+                    visible: false
+                }, {
+                    title: '委比',
+                    field: 'entrust_ratio',
+                    align: 'center'
+                }, {
+                    title: '委差',
+                    field: 'entrust_balance',
+                    align: 'center'
+                }, {
+                    title: '创建时间',
+                    field: 'create_time',
+                    align: 'center',
+                    formatter: dateFormatter
+                }
+            ]
+
+
+        });
+    }
+
+    function plateFormatter(value, row, index) {
+        if (value == null) {
+            return;
+        }
+        console.log(value);
+        console.log(row);
+        console.log(index);
+        var valueStr = value.substring(0, 10);
+        return [
+            '<span title="' + value + '">' + valueStr + '</span>'
+        ].join("");
+    }
+
+    function dateFormatter(value, row, index) {
+        var dateLong = value;
+        var dateTime = new Date(dateLong);
+        var year = dateTime.getFullYear();
+        var month = (dateTime.getMonth() + 1 > 9) ? (dateTime.getMonth() + 1) : ('0' + (dateTime.getMonth() + 1));
+        var day = dateTime.getDate() > 9 ? dateTime.getDate() : '0' + dateTime.getDate();
+        var hour = dateTime.getHours() > 9 ? dateTime.getHours() : '0' + dateTime.getHours();
+        var minute = dateTime.getMinutes() > 9 ? dateTime.getMinutes() : '0' + dateTime.getMinutes();
+        var second = dateTime.getSeconds() > 9 ? dateTime.getSeconds() : '0' + dateTime.getSeconds();
+        var dateTimeResult = year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second;
+        return [
+            '<span>' + dateTimeResult + '</span>'
+        ].join("");
+    }
+
+    function riseOrFallColor(value, row, index) {
+        var color = '';
+        var flag = '';
+        var value = Number(value);
+        if (value < 0) {
+            color = 'green';
+            flag = '&darr;'
+        } else {
+            color = 'red';
+            flag = '&uarr;';
+        }
+        if (value > 10000 || value < -10000) {
+            value = value / 10000 + "万";
+        }
+        return [
+            '<span style="color:' + color + '">' + flag + value + '</span>'
+        ].join('');
+    }
+
+    function numberFormatter(value, row, index) {
+        var value = Number(value);
+        if (value > 10000) {
+            value = value / 10000 + "万";
+        }
+        return [
+            '<span>' + value + '</span>'
+        ].join('');
+    }
+</script>
+</html>

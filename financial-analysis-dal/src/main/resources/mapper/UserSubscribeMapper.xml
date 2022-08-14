@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.analysis.dal.mapper.UserSubscribeMapper">
+
+    <select id="select" parameterType="java.util.Map" resultType="java.util.Map">
+        select * from user_subscribe
+        <where>
+            <if test="userCode != null">
+                user_code = #{userCode}
+            </if>
+        </where>
+        order by id asc
+        <if test="length != null">
+            <if test="start != null">
+                limit ${start}, ${length}
+            </if>
+            <if test="start == null">
+                limit ${length}
+            </if>
+        </if>
+    </select>
+
+    <select id="count" parameterType="java.util.Map" resultType="java.lang.Integer">
+        select count(*) from user_subscribe
+        <where>
+            <if test="userCode != null">
+                user_code = #{userCode}
+            </if>
+        </where>
+    </select>
+
+
+</mapper>
